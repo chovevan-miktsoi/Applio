@@ -37,25 +37,8 @@ jobs:
         run: |
           $version = '${{ steps.get-version.outputs.version }}'
           Compress-Archive -Path 'D:\a\Applio\Applio\*' -DestinationPath "D:\a\Applio\ApplioV$version.zip"
-      - name: Upload Windows Compiled
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          version: ${{ steps.get-version.outputs.version }}
-        run: |
-          .\env\python.exe -c "
-          import os
-          from huggingface_hub import login, upload_file
-          
-          token = os.getenv('HF_TOKEN')
-          version = os.getenv('version')
-          login(token)
-          repo_id = 'IAHispano/Applio'
-          repo_file_path = f'D:/a/Applio/ApplioV{version}.zip'
-          
-          upload_file(
-          commit_message=f'{version}',
-          path_or_fileobj=repo_file_path,
-          path_in_repo=f'Compiled/Windows/ApplioV{version}.zip',
-          repo_id=repo_id,
-          token=token)
-          "
+      - name: Save Zip as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ApplioV${{ steps.get-version.outputs.version }}
+          path: D:\a\Applio\ApplioV${{ steps.get-version.outputs.version }}.zip
