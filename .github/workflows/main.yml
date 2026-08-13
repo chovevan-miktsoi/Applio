@@ -25,10 +25,15 @@ jobs:
           run-id: ${{ github.event.inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Release and Upload Asset
+      - name: Split Large Files
+        run: |
+          mkdir -p split_files
+          zip -s 1500m -r split_files/ApplioV3.6.4.zip ApplioV3.6.4/
+
+      - name: Create Release and Upload Split Assets
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag_name }}
-          files: '**/*'
+          files: split_files/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
